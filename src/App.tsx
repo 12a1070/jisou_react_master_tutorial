@@ -1,8 +1,31 @@
 import { useEffect, useState } from 'react';
 import './App.css'
 
+type Movie = {
+  id: number;
+  original_title: string;
+  poster_path: string;
+  overview: string;
+};
+
+type MovieJson = {
+  adult: boolean;
+  backdrop_path: string;
+  genre_ids: number[];
+  id: number;
+  original_language: string;
+  original_title: string;
+  overview: string;
+  popularity: number;
+  poster_path: string;
+  release_date: string;
+  title: string;
+  video: boolean;
+  vote_average: number;
+  vote_count: number;
+};
+
 function App() {
-  const apiKey = import.meta.env.VITE_TMDB_API_KEY;
   const defaultMovieList= [
   {
       id: 1,
@@ -31,11 +54,10 @@ function App() {
   ];
 
   const [keyword, setKeyword] = useState("");
-  const [movieList, setMovieList] = useState([]);
+  const [movieList, setMovieList] = useState<Movie[]>([]);
 
 
   const fetchMovieList = async () => {
-    // console.log("TOKEN:", import.meta.env.VITE_API_KEY);
     const response = await fetch(
       "https://api.themoviedb.org/3/movie/popular?language=ja&page=1",
       {
@@ -46,7 +68,12 @@ function App() {
     );
 
     const data = await response.json();
-    setMovieList(data.results);
+    setMovieList(data.results.map((movie: MovieJson) => ({
+      id: movie.id,
+      original_title: movie.original_title,
+      overview: movie.overview,
+      poster_path: movie.poster_path,
+    })));
   };
 
   useEffect(() => {
