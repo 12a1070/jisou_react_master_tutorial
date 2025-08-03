@@ -1,10 +1,10 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import './App.css'
 
 function App() {
-
-  const defaultMovieList = [
-    {
+  const apiKey = import.meta.env.VITE_TMDB_API_KEY;
+  const defaultMovieList= [
+  {
       id: 1,
       name: "君の名は。",
       image: "https://media.themoviedb.org/t/p/w600_and_h900_bestv2/yLglTwyFOUZt5fNKm0PWL1PK5gm.jpg",
@@ -31,19 +31,43 @@ function App() {
   ];
 
   const [keyword, setKeyword] = useState("");
+  const [movieList, setMovieList] = useState([]);
+
+
+  const fetchMovieList = async () => {
+    // console.log("TOKEN:", import.meta.env.VITE_API_KEY);
+    const response = await fetch(
+      "https://api.themoviedb.org/3/movie/popular?language=ja&page=1",
+      {
+        headers: {
+          Authorization: `Bearer ${import.meta.env.VITE_TMDB_API_KEY}`,
+        },
+      }
+    );
+
+    const data = await response.json();
+    setMovieList(data.results);
+  };
+
+  useEffect(() => {
+    fetchMovieList();
+  }, []);
+
   return (
     <div>
-      <div>
-        <div>{keyword}</div>
-        <input type="text" onChange={(e) => setKeyword(e.target.value)}/>
-        {defaultMovieList.filter((movie) => movie.name.includes(keyword)).map((movie) => (
+      <div>{keyword}</div>
+      <input type="text" onChange={(e) => setKeyword(e.target.value)}/>
+      {movieList
+        .filter((movie) => movie.original_title.includes(keyword))
+        .map((movie) => (
           <div key={movie.id} >
-            <h2>{movie.name}</h2>
-            <img src={movie.image}/>
+            <h2>{movie.original_title}</h2>
+            <img
+              src={`https://media.themoviedb.org/t/p/w600_and_h900_bestv2${movie.poster_path}`}
+            />
             <p>{movie.overview}</p>
           </div>
-        ))}
-      </div>
+      ))}
     </div>
   );
 }
