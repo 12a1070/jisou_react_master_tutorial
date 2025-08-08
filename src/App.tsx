@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import './App.css'
+import { Link } from 'react-router';
 
 type Movie = {
-  id: number;
+  id: string;
   original_title: string;
   poster_path: string;
   overview: string;
@@ -12,7 +13,7 @@ type MovieJson = {
   adult: boolean;
   backdrop_path: string;
   genre_ids: number[];
-  id: number;
+  id: string;
   original_language: string;
   original_title: string;
   overview: string;
@@ -64,13 +65,13 @@ function App() {
       {movieList
         .filter((movie) => movie.original_title.includes(keyword))
         .map((movie) => (
-          <div key={movie.id} >
+          <Link to={`/movies/${movie.id}`} key={movie.id} >
             <h2>{movie.original_title}</h2>
             <img
               src={`https://media.themoviedb.org/t/p/w600_and_h900_bestv2${movie.poster_path}`}
             />
             <p>{movie.overview}</p>
-          </div>
+          </Link>
       ))}
     </div>
   );
